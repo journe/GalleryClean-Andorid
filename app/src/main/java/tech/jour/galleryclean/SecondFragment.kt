@@ -17,6 +17,7 @@ import tech.jour.galleryclean.databinding.ItemListGroupBinding
 import tech.jour.galleryclean.entry.Group
 import tech.jour.galleryclean.entry.Photo
 import tech.jour.galleryclean.util.SameSizePhoto
+import tech.jour.galleryclean.util.SimilarPhoto
 
 class SecondFragment : Fragment() {
 
@@ -46,7 +47,7 @@ class SecondFragment : Fragment() {
 
         mainViewModel.groups.observe(viewLifecycleOwner) {
             val result = it.filter { g ->
-                (g.photos?.size ?: 0) > 1
+                (g.photos.size) > 1
             }
             binding.list.adapter = GroupAdapter(result)
         }
@@ -62,9 +63,14 @@ class SecondFragment : Fragment() {
 
     private fun findSimilarGroup(photos: List<Photo>) {
         lifecycleScope.launch(Dispatchers.IO) {
-            super.onDestroyView()
-            _binding = null
+            val groups = SimilarPhoto.find(requireContext(), photos)
+            mainViewModel.setGroups(groups)
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
     }
 
     inner class GroupAdapter(private val data: List<Group>) :
@@ -92,10 +98,8 @@ class SecondFragment : Fragment() {
         inner class ViewHolder(private val binding: ItemListGroupBinding) :
             RecyclerView.ViewHolder(binding.root) {
             fun bind(bean: Group, position: Int) {
-                binding.name.text = "Group: $position"
-                if (!bean.photos.isNullOrEmpty()) {
-                    binding.groupRv.adapter = PhotoAdapter(bean.photos)
-                }
+                binding.name.text = "Group: $position Size ${bean.photos.size}"
+                binding.groupRv.adapter = PhotoAdapter(bean.photos)
             }
         }
     }
@@ -126,9 +130,9 @@ class SecondFragment : Fragment() {
             RecyclerView.ViewHolder(binding.root) {
             fun bind(bean: Photo) {
                 binding.image.load(bean.path)
+                binding.imageName.text = bean.path?.replace("storage/emulated/0", "SD")
+                binding.imageSize.text = (bean.size / 1024).toString() + "kb"
             }
         }
     }
-}
-
 }

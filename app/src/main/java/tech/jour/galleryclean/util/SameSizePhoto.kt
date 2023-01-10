@@ -2,6 +2,7 @@ package tech.jour.galleryclean.util
 
 import tech.jour.galleryclean.entry.Group
 import tech.jour.galleryclean.entry.Photo
+import java.util.concurrent.ConcurrentLinkedQueue
 
 class SameSizePhoto(private val photoList: List<Photo>) {
     fun find(): List<Group> {
@@ -10,8 +11,8 @@ class SameSizePhoto(private val photoList: List<Photo>) {
 
         val photos = photoList.toMutableList()
 
-        for (i in photos.indices) {
-            val photo = photos[i]
+        val list = ConcurrentLinkedQueue(photoList)
+        list.forEachIndexed { i, photo ->
             val temp = mutableListOf<Photo>()
             temp.add(photo)
             var j = i + 1
@@ -24,9 +25,7 @@ class SameSizePhoto(private val photoList: List<Photo>) {
                 }
                 j++
             }
-            val group = Group()
-            group.photos = temp
-            groups.add(group)
+            groups.add(Group(temp))
         }
 
         return groups

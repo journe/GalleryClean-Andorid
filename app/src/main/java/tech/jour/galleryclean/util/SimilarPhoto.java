@@ -45,8 +45,7 @@ public class SimilarPhoto {
                 }
             }
 
-            Group group = new Group();
-            group.setPhotos(temp);
+            Group group = new Group(temp);
             groups.add(group);
         }
 

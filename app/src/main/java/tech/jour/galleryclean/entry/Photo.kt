@@ -7,5 +7,6 @@ data class Photo(
     var mimetype: String? = null,
     var size: Long = 0,
     var finger: Long = 0,
-    var fingerPrint: String? = null
+    var fingerPrint: String? = null,
+    var checked: Boolean = false
 )
